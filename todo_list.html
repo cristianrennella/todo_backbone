@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <title>Todo List</title>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js"></script>
+  <link rel="stylesheet" href="stylesheets/style.css" />
+</head>
+
+<body>
+  <div class="columns">
+    <nav>
+      <ul>
+        <li class="header" id="header_list_all" >
+        </li>
+      </ul>
+
+      <script id="header_list" type="text/x-handlebars-template">
+        <a class="list"  href="">All Todos
+          <div class="circle">
+            <span id="total_todos">{{total}}</span>
+          </div>
+        </a>
+      </script>
+
+      <ul id="lists_nav"></ul>
+
+      <script id="lists_template" type="text/x-handlebars-template">
+        {{#each lists}}
+        <li data-id="{{id}}">
+          <a href="#" data-month="{{month}}" data-year="{{year}}">
+            {{monthAndYear}}
+            <div class="circle">
+              <span>{{total}}</span>
+            </div>
+          </a>
+        </li>
+        {{/each}}
+      </script>
+
+      <ul>
+        <li class="header" id="header_list_completed">
+        </li>
+      </ul>
+
+      <script id="header_completed_list" type="text/x-handlebars-template">
+        <a id="list_complete" href="">Completed
+          <div class="circle">
+            <span id="total_completed_todos">{{total}}</span>
+          </div>
+        </a>
+      </script>
+
+      <ul id="lists_completed_nav"></ul>
+
+      <script id="lists_completed_template" type="text/x-handlebars-template">
+        {{#each lists}}
+        <li class="completed" data-id="{{id}}">
+          <a href="#" data-month="{{month}}" data-year="{{year}}">
+            {{monthAndYear}}
+            <div class="circle">
+              <span>{{total}}</span>
+            </div>
+          </a>
+        </li>
+        {{/each}}
+      </script>
+
+    </nav>
+    
+    <main>
+      <div class="menu">
+        <label for="menu-toggle">
+          <img src="images/icon_menu.png" alt="menu" />
+        </label>
+      </div>
+      <header>
+      </header>
+      <a id="add_new">+ Add new to do</a>
+      <ul id="todos_list"></ul>
+    </main>
+
+    <script id="header_todos" type="text/x-handlebars-template">
+      <h1 id="{{current_name}}">{{name}}</h1>
+      <div class="circle head">
+        <span id="current_total">{{total}}</span>
+      </div>
+    </script>
+
+    <script id="todos_template" type="text/x-handlebars-template">
+      {{#each todos}}
+      <li data-id="{{id}}">
+        <input type="checkbox" name="{{title}}" id="checkbox" {{#if complete}} checked {{/if}}>
+        <a href="#" class="todo_title_list {{#if complete}} complete {{/if}}">
+          {{title}} - {{#if year}} 
+          {{month}}/{{year}} 
+          {{else}} 
+          No Due Date 
+          {{/if}}
+        </a>
+        <span class="trash"><a href=""></a></span>
+      </li>
+      {{/each}}
+    </script>
+
+    <div id="modal_container"></div>
+
+    <script id="todo_form" type="text/x-handlebars-template">
+      <div id="modal">
+      <form action="#" method="post">
+        <fieldset>
+          <dl>
+            <dt>
+              <label for="title">Title</label>
+            </dt>
+            <dd>
+              <input type="text" name="title" id="title" placeholder="Item 1" value="{{title}}">
+            </dd>
+          </dl>
+          <dl>
+            <dt>
+              <label>Due Date</label>
+            </dt>
+            <dd id="date">
+              <select name="day" id="day">
+                <option disabled selected>{{#if (hasValue day)}} {{day}} {{else}} Day {{/if}}</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+              </select> / 
+              <select name="month" id="month">
+                <option value="" disabled selected>{{#if (hasValue month)}} {{month}} {{else}} Month {{/if}}</option>
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+                <option>05</option>
+                <option>06</option>
+                <option>07</option>
+                <option>08</option>
+                <option>09</option>
+                <option>10</option>
+                <option>11</option>
+                <option>12</option>
+              </select> / 
+              <select name="year" id="year">
+                <option value="" disabled selected>{{#if (hasValue year)}} {{year}} {{else}} Year {{/if}}</option>
+                <option>2017</option>
+                <option>2018</option>
+                <option>2019</option>
+                <option>2020</option>
+              </select>
+            </dd>
+          </dl>
+          <dl>
+            <dt>
+              <label for="description">Description</label>
+            </dt>
+            <dd>
+              <textarea name="description" id="description" cols="80" rows="5" placeholder="description">{{description}}</textarea>
+            </dd>
+          </dl>
+          <dl>
+            <dt></dt>
+            <dd>
+              <button type="submit">Save</button>
+              <button id="complete">Mark As Complete</button>
+            </dd>
+          </dl>
+        </fieldset>
+      </form>
+      </div>
+    </script>
+
+  </div>
+  <script src="javascripts/models/todo.js"></script>
+  <script src="javascripts/collections/todos.js"></script>
+  <script src="javascripts/views/todos.js"></script>
+  <script src="javascripts/views/header_todos.js"></script>
+  <script src="javascripts/views/lists.js"></script>
+  <script src="javascripts/views/header_lists.js"></script>
+  <script src="javascripts/views/lists_completed.js"></script>
+  <script src="javascripts/views/header_completed_lists.js"></script>
+  <script src="javascripts/views/new_todo.js"></script>
+  <script src="javascripts/views/edit_todo.js"></script>
+  <script src="javascripts/application.js"></script>
+</body>
+</html>
